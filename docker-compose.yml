@@ -1,0 +1,8 @@
+version: '3.9'
+services:
+  springboot-app:
+    build: .
+    image: springboot-external-db
+    ports:
+      - "9090:8080"
+    restart: unless-stopped
