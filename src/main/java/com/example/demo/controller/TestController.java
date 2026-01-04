@@ -1,12 +1,15 @@
 package com.example.demo.controller;
 
 import com.example.demo.service.ExternalDBService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.sql.Connection;
 
 @RestController
+@Tag(name = "Database Test API", description = "APIs for testing external database connectivity")
 public class TestController {
 
     private final ExternalDBService service;
@@ -15,6 +18,10 @@ public class TestController {
         this.service = service;
     }
 
+    @Operation(
+        summary = "Test External Database Connection",
+        description = "Attempts to connect to the external Oracle database using configured properties"
+    )
     @GetMapping("/external-db-test")
     public String testExternalDb() {
 
