@@ -1,7 +1,8 @@
-package com.example.demo.service;
+package com.api.demo.service;
 
-import com.example.demo.util.ExternalPropertyUtil;
 import org.springframework.stereotype.Service;
+
+import com.api.demo.util.ExternalPropertyUtil;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

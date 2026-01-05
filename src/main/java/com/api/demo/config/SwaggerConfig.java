@@ -1,4 +1,4 @@
-package com.example.demo.config;
+package com.api.demo.config;
 
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Contact;

@@ -5,14 +5,14 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-         <version>4.0.1</version>
+		<version>3.5.7</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>demo</artifactId>
+	<groupId>com.codeboxcloud</groupId>
+	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>demo</name>
-	<description>Demo project for Spring Boot</description>
+	<name>API SIQ</name>
+	<description>Backend service for  API SIQ – deploy GitHub repos with Docker</description>
 	<url/>
 	<licenses>
 		<license/>
@@ -30,41 +30,53 @@
 		<java.version>17</java.version>
 	</properties>
 	<dependencies>
-    
-    <dependency>
-       <groupId>org.springframework.boot</groupId>
-       <artifactId>spring-boot-starter-web</artifactId>
-    </dependency>
-
-    <dependency>
+		<dependency>
        <groupId>com.oracle.database.jdbc</groupId>
        <artifactId>ojdbc11</artifactId>
        <version>23.2.0.0</version>
     </dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
 
-    <dependency>
-       <groupId>org.projectlombok</groupId>
-       <artifactId>lombok</artifactId>
-       <optional>true</optional>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<scope>runtime</scope>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<optional>true</optional>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+    <groupId>org.eclipse.jgit</groupId>
+    <artifactId>org.eclipse.jgit</artifactId>
+    <version>6.6.0.202305301015-r</version>
     </dependency>
-    <dependency>
-       <groupId>org.springframework.boot</groupId>
-       <artifactId>spring-boot-starter-test</artifactId>
-       <scope>test</scope>
-    </dependency>
+
 	<dependency>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-devtools</artifactId>
-    <scope>runtime</scope>
-    <optional>true</optional>
-</dependency>
-<dependency>
     <groupId>org.springdoc</groupId>
     <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
 	<version>2.5.0</version>
+    </dependency>
+<!-- JPA / Hibernate -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-data-jpa</artifactId>
 </dependency>
 
-</dependencies>
+
+
+	</dependencies>
+
 	<build>
 		<plugins>
 			<plugin>

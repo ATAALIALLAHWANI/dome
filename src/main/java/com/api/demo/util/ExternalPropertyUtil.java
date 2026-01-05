@@ -1,4 +1,4 @@
-package com.example.demo.util;
+package com.api.demo.util;
 
 import java.io.InputStream;
 import java.io.IOException;
