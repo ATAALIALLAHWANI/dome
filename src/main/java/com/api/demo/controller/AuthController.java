@@ -19,6 +19,22 @@ import java.util.Map;
 public class AuthController {
     @Autowired
     private  AuthService authService;
+
+
+
+ @PostMapping("/login")
+    public EmployeeLoginResponseDto login(@RequestBody LoginRequestDto request) {
+        return authService.EmployeeLogin(request.getUsername(), request.getPassword());
+    }
+
+
+
+
+
+
+
+
+
  
 //     // POST /api/auth/login
 //    @PostMapping("/login")
@@ -32,25 +48,6 @@ public class AuthController {
 //     }
 // }
 
-
-
-@PostMapping("/employee-login")
-public ResponseEntity<EmployeeLoginResponseDto> login(
-        @RequestBody LoginRequestDto request) {
-    try {
-        EmployeeLoginResponseDto response = authService.EmployeeLogin(
-                request.getUsername(), request.getPassword());
-        return ResponseEntity.ok(response);
-    } catch (ResponseStatusException ex) {
-        // Return HTTP status with empty body
-        return ResponseEntity.status(ex.getStatusCode()).body(null);
-    }
-}
-
-
-
-
- 
 
 
 //  // New API to insert into ALAA_TEST
