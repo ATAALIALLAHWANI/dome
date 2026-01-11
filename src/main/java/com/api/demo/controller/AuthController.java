@@ -6,8 +6,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.api.demo.model.LoginRequestDto;
-import com.api.demo.model.LoginResponseDto;
+import com.api.demo.dto.LoginRequestDto;
+import com.api.demo.dto.LoginResponseDto;
 import com.api.demo.service.AuthService;
 import java.util.Map;
 

@@ -8,10 +8,10 @@ import org.springframework.web.server.ResponseStatusException;
 import com.api.demo.repository.UserRepository;
 import com.api.demo.repository.PatientRepository;
 import com.api.demo.repository.PatientDetailsRepository;
-import com.api.demo.model.LoginResponseDto;
-import com.api.demo.model.PatientDto;
 import com.api.demo.entity.UserEntity;
 import com.api.demo.entity.PatientEntity;
+import com.api.demo.dto.LoginResponseDto;
+import com.api.demo.dto.PatientDto;
 import com.api.demo.entity.PatientDetailsEntity;
 @Service
 public class AuthService {
