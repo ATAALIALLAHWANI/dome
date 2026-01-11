@@ -7,54 +7,85 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.api.demo.repository.UserRepository;
 import com.api.demo.repository.PatientRepository;
+import com.api.demo.repository.SysUserRepository;
 import com.api.demo.repository.PatientDetailsRepository;
 import com.api.demo.entity.UserEntity;
 import com.api.demo.entity.PatientEntity;
+import com.api.demo.dto.EmployeeLoginResponseDto;
 import com.api.demo.dto.LoginResponseDto;
 import com.api.demo.dto.PatientDto;
+import com.api.demo.dto.UserLoginResultDto;
+import com.api.demo.dto.UserLoginResultProjection;
 import com.api.demo.entity.PatientDetailsEntity;
+
 @Service
 public class AuthService {
 
-    @Autowired
-    private UserRepository userRepository;
+        @Autowired
+        private UserRepository userRepository;
 
-    @Autowired
-    private PatientRepository patientRepository;
+        @Autowired
+        private PatientRepository patientRepository;
 
-    @Autowired
-    private PatientDetailsRepository patientDetailsRepository;
+        @Autowired
+        private PatientDetailsRepository patientDetailsRepository;
 
-    public LoginResponseDto login(String username, String password) {
-        // Find active user
-        UserEntity user = userRepository.findByUsernameAndPasswordAndActive(username, password, 1L)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.UNAUTHORIZED, "Invalid username or password"));
+        @Autowired
+        private SysUserRepository sysUserRepository;
 
-        // Fetch patient
-        PatientEntity patient = patientRepository.findById(user.getPatientId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Patient not found"));
+        public LoginResponseDto login(String username, String password) {
+                // Find active user
+                UserEntity user = userRepository.findByUsernameAndPasswordAndActive(username, password, 1L)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.UNAUTHORIZED, "Invalid username or password"));
 
-        // Fetch patient details
-        PatientDetailsEntity details = patientDetailsRepository.findById(user.getPatientId())
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND, "Patient details not found"));
+                // Fetch patient
+                PatientEntity patient = patientRepository.findById(user.getPatientId())
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND, "Patient not found"));
 
-        // Map to DTO
-        PatientDto patientDto = new PatientDto();
-        patientDto.setPatientId(patient.getPatientId());
-        patientDto.setFullNameAr(patient.getFullNameAr());
-        patientDto.setFullNameEn(patient.getFullNameEn());
-        patientDto.setDateOfBirth(patient.getDateOfBirth());
-        patientDto.setNationalId(patient.getNationalId());
-        patientDto.setMobile(details.getMobile());
-        patientDto.setEmail(details.getEmail());
+                // Fetch patient details
+                PatientDetailsEntity details = patientDetailsRepository.findById(user.getPatientId())
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.NOT_FOUND, "Patient details not found"));
 
-        LoginResponseDto response = new LoginResponseDto();
-        response.setUserId(user.getUserId());
-        response.setPatient(patientDto);
+                // Map to DTO
+                PatientDto patientDto = new PatientDto();
+                patientDto.setPatientId(patient.getPatientId());
+                patientDto.setFullNameAr(patient.getFullNameAr());
+                patientDto.setFullNameEn(patient.getFullNameEn());
+                patientDto.setDateOfBirth(patient.getDateOfBirth());
+                patientDto.setNationalId(patient.getNationalId());
+                patientDto.setMobile(details.getMobile());
+                patientDto.setEmail(details.getEmail());
 
-        return response;
-    }
+                LoginResponseDto response = new LoginResponseDto();
+                response.setUserId(user.getUserId());
+                response.setPatient(patientDto);
+
+                return response;
+        }
+
+        public EmployeeLoginResponseDto EmployeeLogin(String username, String password) {
+                UserLoginResultProjection user = sysUserRepository.login(username, password)
+                                .orElseThrow(() -> new ResponseStatusException(
+                                                HttpStatus.UNAUTHORIZED, "Invalid username or password"));
+
+                EmployeeLoginResponseDto response = new EmployeeLoginResponseDto();
+                response.setUserId(user.getUserId());
+                response.setUserType(user.getUserType());
+
+                response.setEmpNameEng(user.getEmpNameEng());
+                response.setEmpNameArb(user.getEmpNameArb());
+
+                response.setSiteId(user.getSiteId());
+                response.setDeptId(user.getDeptId());
+                response.setSiteDescArb(user.getSiteDescArb());
+                response.setSiteDescEng(user.getSiteDescEng());
+                response.setEmpType(user.getEmpType());
+                response.setStaffId(user.getStaffId());
+
+                return response;
+        }
+
 }

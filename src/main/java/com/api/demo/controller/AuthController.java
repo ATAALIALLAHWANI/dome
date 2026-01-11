@@ -6,8 +6,11 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.api.demo.dto.EmployeeLoginResponseDto;
 import com.api.demo.dto.LoginRequestDto;
 import com.api.demo.dto.LoginResponseDto;
+import com.api.demo.dto.UserLoginResultDto;
+import com.api.demo.dto.UserLoginResultProjection;
 import com.api.demo.service.AuthService;
 import java.util.Map;
 
@@ -18,17 +21,38 @@ public class AuthController {
     @Autowired
     private  AuthService authService;
  
-    // POST /api/auth/login
-   @PostMapping("/login")
-public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
+//     // POST /api/auth/login
+//    @PostMapping("/login")
+// public ResponseEntity<?> login(@RequestBody LoginRequestDto request) {
+//     try {
+//         LoginResponseDto response = authService.login(request.getUsername(), request.getPassword());
+//         return ResponseEntity.ok(response); // 200 OK
+//     } catch (ResponseStatusException ex) {
+//         return ResponseEntity.status(ex.getStatusCode())
+//                              .body(Map.of("message", ex.getReason()));
+//     }
+// }
+
+
+
+@PostMapping("/EmployeeLogin")
+public ResponseEntity<EmployeeLoginResponseDto> login(
+        @RequestBody LoginRequestDto request) {
     try {
-        LoginResponseDto response = authService.login(request.getUsername(), request.getPassword());
-        return ResponseEntity.ok(response); // 200 OK
+        EmployeeLoginResponseDto response = authService.EmployeeLogin(
+                request.getUsername(), request.getPassword());
+        return ResponseEntity.ok(response);
     } catch (ResponseStatusException ex) {
-        return ResponseEntity.status(ex.getStatusCode())
-                             .body(Map.of("message", ex.getReason()));
+        // Return HTTP status with empty body
+        return ResponseEntity.status(ex.getStatusCode()).body(null);
     }
 }
+
+
+
+
+ 
+
 
 //  // New API to insert into ALAA_TEST
 
