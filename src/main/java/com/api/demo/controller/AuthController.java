@@ -34,7 +34,7 @@ public class AuthController {
 
 
 
-@PostMapping("/EmployeeLogin")
+@PostMapping("/employee-login")
 public ResponseEntity<EmployeeLoginResponseDto> login(
         @RequestBody LoginRequestDto request) {
     try {
