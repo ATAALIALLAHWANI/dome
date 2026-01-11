@@ -9,7 +9,6 @@ import org.springframework.web.server.ResponseStatusException;
 import com.api.demo.dto.EmployeeLoginResponseDto;
 import com.api.demo.dto.LoginRequestDto;
 import com.api.demo.dto.LoginResponseDto;
-import com.api.demo.dto.UserLoginResultDto;
 import com.api.demo.dto.UserLoginResultProjection;
 import com.api.demo.service.AuthService;
 import java.util.Map;

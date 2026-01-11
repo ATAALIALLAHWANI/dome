@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import com.api.demo.dto.UserLoginResultDto;
 import com.api.demo.dto.UserLoginResultProjection;
 import com.api.demo.entity.SysUserEntity;
 @Repository

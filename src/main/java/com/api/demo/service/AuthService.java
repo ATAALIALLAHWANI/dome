@@ -14,7 +14,6 @@ import com.api.demo.entity.PatientEntity;
 import com.api.demo.dto.EmployeeLoginResponseDto;
 import com.api.demo.dto.LoginResponseDto;
 import com.api.demo.dto.PatientDto;
-import com.api.demo.dto.UserLoginResultDto;
 import com.api.demo.dto.UserLoginResultProjection;
 import com.api.demo.entity.PatientDetailsEntity;
 
@@ -72,8 +71,6 @@ public class AuthService {
                                                 HttpStatus.UNAUTHORIZED, "Invalid username or password"));
 
                 EmployeeLoginResponseDto response = new EmployeeLoginResponseDto();
-                response.setUserId(user.getUserId());
-                response.setUserType(user.getUserType());
 
                 response.setEmpNameEng(user.getEmpNameEng());
                 response.setEmpNameArb(user.getEmpNameArb());

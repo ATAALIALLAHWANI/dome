@@ -5,8 +5,9 @@ import lombok.Data;
 @Data
 public class EmployeeLoginResponseDto {
 
-    private Long userId;
-    private Long userType;
+    // private Long userId;
+    // private Long userType;
+    private Long staffId;
     private String empNameEng;
     private String empNameArb;
     private Long siteId;
@@ -14,5 +15,4 @@ public class EmployeeLoginResponseDto {
     private Long empType;
     private String siteDescArb;
     private String siteDescEng;
-    private Long staffId;
 }
