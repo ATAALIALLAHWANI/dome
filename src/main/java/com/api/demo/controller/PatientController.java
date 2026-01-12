@@ -2,7 +2,7 @@ package com.api.demo.controller;
 
 import org.springframework.web.bind.annotation.*;
 
-import com.api.demo.entity.PatientEntity;
+import com.api.demo.dto.PatientDto;
 import com.api.demo.service.PatientService;
 
 import lombok.AllArgsConstructor;
@@ -16,8 +16,7 @@ public class PatientController {
     private final PatientService patientService;
 
     @GetMapping("/{patientId}")
-    public PatientEntity getPatientById(@PathVariable Long patientId) {
-        System.out.println("Fetching patient with ID: " + patientId);
+    public PatientDto getPatientById(@PathVariable Long patientId) {
         return patientService.getPatientById(patientId);
     }
 }

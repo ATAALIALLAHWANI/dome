@@ -6,4 +6,6 @@ import com.api.demo.entity.PatientDetailsEntity;
 
 @Repository
 public interface PatientDetailsRepository extends JpaRepository<PatientDetailsEntity, Long> {
+        PatientDetailsEntity findByPatientId(Long patientId);
+
 }
