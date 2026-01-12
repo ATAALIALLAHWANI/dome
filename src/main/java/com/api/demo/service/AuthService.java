@@ -12,6 +12,7 @@ import com.api.demo.repository.PatientDetailsRepository;
 import com.api.demo.entity.UserEntity;
 import com.api.demo.entity.PatientEntity;
 import com.api.demo.dto.EmployeeLoginResponseDto;
+import com.api.demo.dto.EmployeeLoginWithTokenDto;
 import com.api.demo.dto.LoginResponseDto;
 import com.api.demo.dto.PatientDto;
 import com.api.demo.dto.UserLoginResultProjection;
@@ -65,24 +66,48 @@ public class AuthService {
                 return response;
         }
 
-        public EmployeeLoginResponseDto EmployeeLogin(String username, String password) {
-                UserLoginResultProjection user = sysUserRepository.login(username, password)
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.UNAUTHORIZED, "Invalid username or password"));
+     public EmployeeLoginResponseDto EmployeeLogin(String username, String password, String jwtToken) {
+    UserLoginResultProjection user = sysUserRepository.login(username, password)
+            .orElseThrow(() -> new ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED, "Invalid username or password"));
 
-                EmployeeLoginResponseDto response = new EmployeeLoginResponseDto();
+    EmployeeLoginResponseDto response = new EmployeeLoginResponseDto();
+    response.setEmpNameEng(user.getEmpNameEng());
+    response.setEmpNameArb(user.getEmpNameArb());
+    response.setSiteId(user.getSiteId());
+    response.setDeptId(user.getDeptId());
+    response.setSiteDescArb(user.getSiteDescArb());
+    response.setSiteDescEng(user.getSiteDescEng());
+    response.setEmpType(user.getEmpType());
+    response.setStaffId(user.getStaffId());
 
-                response.setEmpNameEng(user.getEmpNameEng());
-                response.setEmpNameArb(user.getEmpNameArb());
+    
+    return response;
+}
 
-                response.setSiteId(user.getSiteId());
-                response.setDeptId(user.getDeptId());
-                response.setSiteDescArb(user.getSiteDescArb());
-                response.setSiteDescEng(user.getSiteDescEng());
-                response.setEmpType(user.getEmpType());
-                response.setStaffId(user.getStaffId());
 
-                return response;
-        }
+        
+ public EmployeeLoginResponseDto loadEmployeeByUsername(String username) {
+
+        UserLoginResultProjection user =
+                sysUserRepository.findEmployeeByUsername(username)
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.NOT_FOUND,
+                                "User not found"
+                        ));
+
+        EmployeeLoginResponseDto response = new EmployeeLoginResponseDto();
+        response.setStaffId(user.getStaffId());
+        response.setEmpNameEng(user.getEmpNameEng());
+        response.setEmpNameArb(user.getEmpNameArb());
+        response.setSiteId(user.getSiteId());
+        response.setDeptId(user.getDeptId());
+        response.setEmpType(user.getEmpType());
+        response.setSiteDescArb(user.getSiteDescArb());
+        response.setSiteDescEng(user.getSiteDescEng());
+
+        return response;
+    }
+
 
 }
