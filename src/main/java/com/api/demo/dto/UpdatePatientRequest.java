@@ -1,15 +1,14 @@
 package com.api.demo.dto;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
 
 import lombok.Data;
 
 @Data
-public class PatientDto {
-    private Long patientId;
-    private Long patientNo;
-    
+@JsonInclude(JsonInclude.Include.NON_NULL) // IMPORTANT: This allows partial JSON
+public class UpdatePatientRequest {
     private String firstNameAr;
     private String firstNameEn;
     private String fatherNameAr;
@@ -18,8 +17,6 @@ public class PatientDto {
     private String grandfatherNameEn;
     private String lastNameAr;
     private String lastNameEn;
-    private String fullNameAr;
-    private String fullNameEn;
     
     private Long gender;
     private Long maritalStatus;
@@ -31,9 +28,4 @@ public class PatientDto {
     private String address;
     private String placeOfBirth;
     private String nationalNo;
-    
-    private String createdBy;
-    private LocalDateTime creationDate;
-    private String lastUpdatedBy;
-    private LocalDateTime lastUpdatedDate;
 }

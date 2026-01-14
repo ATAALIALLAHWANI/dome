@@ -1,39 +1,52 @@
 package com.api.demo.dto;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 @Data
-public class PatientDto {
-    private Long patientId;
-    private Long patientNo;
-    
+public class CreatePatientRequest {
+
+    /* ===== Mandatory (*) ===== */
+
+    @NotBlank
     private String firstNameAr;
+
+    @NotBlank
     private String firstNameEn;
+
+    @NotBlank
     private String fatherNameAr;
+
+    @NotBlank
     private String fatherNameEn;
+
+    @NotBlank
+    private String lastNameAr;
+
+    @NotBlank
+    private String lastNameEn;
+
+    @NotNull
+    private Long gender; // 1=Male, 2=Female
+
+    @NotNull
+    private Long maritalStatus;
+
+    @NotNull
+    private Long nationality;
+
+    @NotNull
+    private LocalDate dateOfBirth;
+
+    /* ===== Optional ===== */
+
     private String grandfatherNameAr;
     private String grandfatherNameEn;
-    private String lastNameAr;
-    private String lastNameEn;
-    private String fullNameAr;
-    private String fullNameEn;
-    
-    private Long gender;
-    private Long maritalStatus;
-    private Long nationality;
-    private LocalDate dateOfBirth;
-    
     private String mobile;
     private String email;
     private String address;
     private String placeOfBirth;
     private String nationalNo;
-    
-    private String createdBy;
-    private LocalDateTime creationDate;
-    private String lastUpdatedBy;
-    private LocalDateTime lastUpdatedDate;
 }

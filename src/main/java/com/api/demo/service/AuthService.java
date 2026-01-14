@@ -33,38 +33,38 @@ public class AuthService {
         @Autowired
         private SysUserRepository sysUserRepository;
 
-        public LoginResponseDto login(String username, String password) {
-                // Find active user
-                UserEntity user = userRepository.findByUsernameAndPasswordAndActive(username, password, 1L)
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.UNAUTHORIZED, "Invalid username or password"));
+        // public LoginResponseDto login(String username, String password) {
+        //         // Find active user
+        //         UserEntity user = userRepository.findByUsernameAndPasswordAndActive(username, password, 1L)
+        //                         .orElseThrow(() -> new ResponseStatusException(
+        //                                         HttpStatus.UNAUTHORIZED, "Invalid username or password"));
 
-                // Fetch patient
-                PatientEntity patient = patientRepository.findById(user.getPatientId())
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.NOT_FOUND, "Patient not found"));
+        //         // Fetch patient
+        //         PatientEntity patient = patientRepository.findById(user.getPatientId())
+        //                         .orElseThrow(() -> new ResponseStatusException(
+        //                                         HttpStatus.NOT_FOUND, "Patient not found"));
 
-                // Fetch patient details
-                PatientDetailsEntity details = patientDetailsRepository.findById(user.getPatientId())
-                                .orElseThrow(() -> new ResponseStatusException(
-                                                HttpStatus.NOT_FOUND, "Patient details not found"));
+        //         // Fetch patient details
+        //         PatientDetailsEntity details = patientDetailsRepository.findById(user.getPatientId())
+        //                         .orElseThrow(() -> new ResponseStatusException(
+        //                                         HttpStatus.NOT_FOUND, "Patient details not found"));
 
-                // Map to DTO
-                PatientDto patientDto = new PatientDto();
-                patientDto.setPatientId(patient.getPatientId());
-                patientDto.setFullNameAr(patient.getFullNameAr());
-                patientDto.setFullNameEn(patient.getFullNameEn());
-                patientDto.setDateOfBirth(patient.getDateOfBirth());
-                patientDto.setNationalId(patient.getNationalId());
-                patientDto.setMobile(details.getMobile());
-                patientDto.setEmail(details.getEmail());
+        //         // Map to DTO
+        //         PatientDto patientDto = new PatientDto();
+        //         patientDto.setPatientId(patient.getPatientId());
+        //         patientDto.setFullNameAr(patient.getFullNameAr());
+        //         patientDto.setFullNameEn(patient.getFullNameEn());
+        //         patientDto.setDateOfBirth(patient.getDateOfBirth());
+        //         patientDto.setNationalId(patient.getNationalId());
+        //         patientDto.setMobile(details.getMobile());
+        //         patientDto.setEmail(details.getEmail());
 
-                LoginResponseDto response = new LoginResponseDto();
-                response.setUserId(user.getUserId());
-                response.setPatient(patientDto);
+        //         LoginResponseDto response = new LoginResponseDto();
+        //         response.setUserId(user.getUserId());
+        //         response.setPatient(patientDto);
 
-                return response;
-        }
+        //         return response;
+        // }
 
      public EmployeeLoginResponseDto EmployeeLogin(String username, String password, String jwtToken) {
     UserLoginResultProjection user = sysUserRepository.login(username, password)

@@ -6,4 +6,12 @@ import com.api.demo.entity.PatientEntity;
 
 @Repository
 public interface PatientRepository extends JpaRepository<PatientEntity, Long> {
+
+      boolean existsByNationalIdNo(String nationalIdNo);
+    
+    boolean existsByPatientNo(Long patientNo);
+    
+    // Find by patient number
+    PatientEntity findByPatientNo(Long patientNo);
+    
 }
