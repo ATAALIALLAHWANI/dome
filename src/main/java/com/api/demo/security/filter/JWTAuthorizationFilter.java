@@ -15,6 +15,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.api.demo.security.EmployeePrincipal;
 import com.api.demo.security.SecurityConstants;
 
 import jakarta.servlet.FilterChain;
@@ -32,46 +33,57 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
         String header = request.getHeader(SecurityConstants.AUTHORIZATION);
 
-        // If there is no Authorization header or it's not a Bearer token, continue
+        // Skip if no Bearer token
         if (header == null || !header.startsWith(SecurityConstants.BEARER)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        // Extract the token
-        String token = header.replace(SecurityConstants.BEARER, "").trim();
-
         try {
-            // Verify the JWT token
+            String token = header.replace(SecurityConstants.BEARER, "").trim();
+
+            // Verify JWT
             DecodedJWT decodedJWT = JWT.require(Algorithm.HMAC512(SecurityConstants.SECRET_KEY))
                     .build()
                     .verify(token);
 
-            // Extract username/email from token
+            // Extract username
             String username = decodedJWT.getSubject();
 
-            // Extract roles from token
-            List<String> roles = decodedJWT.getClaim("roles").asList(String.class);
+            // Extract siteId from token
+            Long siteId = decodedJWT.getClaim("siteId").asLong();
 
-            // Convert roles to GrantedAuthority list
-            List<GrantedAuthority> authorities = roles.stream()
+            // Extract roles and convert to GrantedAuthority
+            List<GrantedAuthority> authorities = decodedJWT.getClaim("roles").asList(String.class)
+                    .stream()
                     .map(SimpleGrantedAuthority::new)
                     .collect(Collectors.toList());
 
-            // Create authentication object and set it in SecurityContext
-            Authentication authentication = new UsernamePasswordAuthenticationToken(username, null, authorities);
+            // Build EmployeePrincipal
+            EmployeePrincipal principal = new EmployeePrincipal(
+                    null, // staffId (optional, include if stored in JWT)
+                    username,
+                    siteId,
+                    null, // password not needed here
+                    authorities
+            );
+
+            // Create Authentication object
+            Authentication authentication =
+                    new UsernamePasswordAuthenticationToken(principal, null, authorities);
+
+            // Set in SecurityContext
             SecurityContextHolder.getContext().setAuthentication(authentication);
 
         } catch (JWTVerificationException e) {
-            // If token is invalid or expired, return 401 Unauthorized
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.setContentType("application/json");
             response.getWriter().write("{\"status\":401,\"message\":\"Invalid or expired JWT token\"}");
             response.getWriter().flush();
-            return; // Stop further processing
+            return;
         }
 
-        // Continue with the filter chain
+        // Continue the filter chain
         filterChain.doFilter(request, response);
     }
 }

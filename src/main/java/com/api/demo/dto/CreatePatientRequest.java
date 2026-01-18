@@ -1,52 +1,52 @@
 package com.api.demo.dto;
 
-import jakarta.validation.constraints.*;
-import lombok.Data;
-
 import java.time.LocalDate;
 
+import jakarta.validation.constraints.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 @Data
-public class CreatePatientRequest {
-
-    /* ===== Mandatory (*) ===== */
-
-    @NotBlank
-    private String firstNameAr;
+@EqualsAndHashCode(callSuper = true)
+public class CreatePatientRequest extends BasePatientRequest {
 
     @NotBlank
-    private String firstNameEn;
+    @Override
+    public String getFirstNameAr() { return super.getFirstNameAr(); }
 
     @NotBlank
-    private String fatherNameAr;
+    @Override
+    public String getFirstNameEn() { return super.getFirstNameEn(); }
 
     @NotBlank
-    private String fatherNameEn;
+    @Override
+    public String getFatherNameAr() { return super.getFatherNameAr(); }
 
     @NotBlank
-    private String lastNameAr;
+    @Override
+    public String getFatherNameEn() { return super.getFatherNameEn(); }
 
     @NotBlank
-    private String lastNameEn;
+    @Override
+    public String getLastNameAr() { return super.getLastNameAr(); }
+
+    @NotBlank
+    @Override
+    public String getLastNameEn() { return super.getLastNameEn(); }
 
     @NotNull
-    private Long gender; // 1=Male, 2=Female
+    @Override
+    public Long getGender() { return super.getGender(); }
 
     @NotNull
-    private Long maritalStatus;
+    @Override
+    public Long getMaritalStatus() { return super.getMaritalStatus(); }
 
     @NotNull
-    private Long nationality;
+    @Override
+    public Long getNationality() { return super.getNationality(); }
 
     @NotNull
-    private LocalDate dateOfBirth;
-
-    /* ===== Optional ===== */
-
-    private String grandfatherNameAr;
-    private String grandfatherNameEn;
-    private String mobile;
-    private String email;
-    private String address;
-    private String placeOfBirth;
-    private String nationalNo;
+    @Override
+    public LocalDate getDateOfBirth() { return super.getDateOfBirth(); }
 }

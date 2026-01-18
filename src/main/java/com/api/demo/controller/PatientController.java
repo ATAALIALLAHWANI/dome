@@ -9,6 +9,7 @@ import com.api.demo.dto.PatientDto;
 import com.api.demo.dto.UpdatePatientRequest;
 import com.api.demo.service.PatientService;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 
@@ -16,6 +17,7 @@ import lombok.AllArgsConstructor;
 @RequestMapping("/api/patients")
 @AllArgsConstructor
 @CrossOrigin(origins = "*")
+@Tag(name = "Patient Management", description = "Operations for managing patients")
 public class PatientController {
 
     private final PatientService patientService;
@@ -24,7 +26,10 @@ public class PatientController {
     public PatientDto getPatientById(@PathVariable Long patientId) {
         return patientService.getPatientById(patientId);
     }
-
+    @GetMapping("/number/{patientNo}")
+    public PatientDto getPatientByNumber(@PathVariable Long patientNo) {
+        return patientService.getPatientByNumber(patientNo);
+    }
 
      @PostMapping
     public ResponseEntity<Long> createPatient(

@@ -9,11 +9,14 @@ import com.api.demo.dto.LoginRequestDto;
 import com.api.demo.service.AuthService;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 
 @RestController
 @RequestMapping("/api/auth")  // Base URL
 @CrossOrigin(origins = "*")
+@Tag(name = "Authentication Management", description = "Operations for managing authentication")
+
 public class AuthController {
     @Autowired
     private  AuthService authService;

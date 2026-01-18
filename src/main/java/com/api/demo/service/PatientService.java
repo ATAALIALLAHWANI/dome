@@ -9,9 +9,11 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
-
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.Authentication;
 import com.api.demo.dao.HISDmlStatement;
 import com.api.demo.dto.CreatePatientRequest;
 import com.api.demo.dto.PatientDto;
@@ -20,6 +22,7 @@ import com.api.demo.entity.PatientDetailsEntity;
 import com.api.demo.entity.PatientEntity;
 import com.api.demo.repository.PatientDetailsRepository;
 import com.api.demo.repository.PatientRepository;
+import com.api.demo.security.EmployeePrincipal;
 import com.api.demo.service.generator.PatientNumberGenerator;
 import com.api.demo.util.DbUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,16 +64,17 @@ public class PatientService {
             conn = dataSource.getConnection();
             DbUtils.setAutoCommit(conn, false);
 
+            //////////
+
             /* ================= DUPLICATE CHECK (INSIDE TRANSACTION) ================= */
             // Call the duplicate check service
-           String duplicateResult = patientCheckService.checkPatientDuplicate(
-        req.getFirstNameAr(),
-        req.getFatherNameAr(),
-        req.getGrandfatherNameAr(),
-        req.getLastNameAr(),
-        req.getMobile(),
-        java.sql.Date.valueOf(req.getDateOfBirth())
-);
+            String duplicateResult = patientCheckService.checkPatientDuplicate(
+                    req.getFirstNameAr(),
+                    req.getFatherNameAr(),
+                    req.getGrandfatherNameAr(),
+                    req.getLastNameAr(),
+                    req.getMobile(),
+                    java.sql.Date.valueOf(req.getDateOfBirth()));
             // If duplicate exists, throw HTTP 409 Conflict with exact message from SP
             if (duplicateResult != null && !"Y".equalsIgnoreCase(duplicateResult.trim())) {
                 throw new ResponseStatusException(HttpStatus.CONFLICT, duplicateResult);
@@ -261,11 +265,22 @@ public class PatientService {
         ResultSet rs = null;
 
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+             Long siteId = 1L; // Default site ID;
+            if (auth != null && auth.getPrincipal() instanceof EmployeePrincipal) {
+                EmployeePrincipal principal = (EmployeePrincipal) auth.getPrincipal();
+                 siteId = principal.getSiteId(); // <-- this is the employee's site
+                System.out.println("Site ID for new patient: " + siteId);
+            } else {
+                // Fallback if user is not authenticated
+                System.out.println("No authenticated employee found or principal is not EmployeePrincipal");
+            }
+
             pstmt = conn.prepareStatement(HISDmlStatement.INSERT_SYS_PATIENTS,
                     new String[] { "ID" });
 
             int paramIndex = 1;
-            pstmt.setLong(paramIndex++, 1L); // SITE_ID
+            pstmt.setLong(paramIndex++, siteId); // SITE_ID
             pstmt.setLong(paramIndex++, patientNo); // PATIENT_NO
             pstmt.setObject(paramIndex++, req.getNationality()); // NATIONAL_VALUE
             pstmt.setObject(paramIndex++, req.getGender()); // SEX
@@ -471,6 +486,26 @@ public class PatientService {
         return mapToPatientDto(patient, details);
     }
 
+    @Transactional(readOnly = true)
+    public PatientDto getPatientByNumber(Long patientNo) {
+        log.info("Getting patient with patient number: {}", patientNo);
+
+        // Find patient in SYS_PATIENTS
+        PatientEntity patient = patientRepository.findByPatientNo(patientNo);
+        if (patient == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Patient not found with patient number: " + patientNo);
+        }
+
+        // Find patient details
+        PatientDetailsEntity details = patientDetailsRepository.findById(patient.getId())
+                .orElse(null);
+
+        // Map to DTO
+        return mapToPatientDto(patient, details);
+    }
+
     /**
      * Map PatientEntity and PatientDetailsEntity to PatientDto
      */
@@ -480,7 +515,7 @@ public class PatientService {
         // Basic patient info from SYS_PATIENTS
         dto.setPatientId(patient.getId());
         dto.setPatientNo(patient.getPatientNo());
-
+        dto.setSiteId(patient.getSiteId());
         // Names from SYS_PATIENTS
         dto.setFirstNameAr(patient.getFirstNameA());
         dto.setFirstNameEn(patient.getFirstNameE());

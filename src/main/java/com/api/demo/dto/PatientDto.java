@@ -9,7 +9,7 @@ import lombok.Data;
 public class PatientDto {
     private Long patientId;
     private Long patientNo;
-    
+    private Long siteId ;
     private String firstNameAr;
     private String firstNameEn;
     private String fatherNameAr;
