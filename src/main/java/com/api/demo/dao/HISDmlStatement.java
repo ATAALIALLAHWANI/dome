@@ -26,7 +26,7 @@ public interface HISDmlStatement {
         "MOTHER_NATIONAL_ID, FATHER_NATIONAL_ID, PATIENT_PHOTO, RESIDENCY_CARD_IMG, INACTIVE_DATE" +
         ") VALUES (SYS_PATIENTS_SEQ.NEXTVAL, ?, ?, ?, ?, ?, ?, " +
         "?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, " +
-        "?, SYSDATE, ?, SYSDATE, ?, ?, NULL, NULL, NULL, NULL, NULL, NULL, " +
+        "?, SYSDATE, ?, SYSDATE, ?, ?, NULL, NULL, ?, NULL, NULL, NULL, " +
         "NULL, NULL, NULL, NULL, SYSDATE)";
     
     String INSERT_SYS_PATIENT_DETAILS = 

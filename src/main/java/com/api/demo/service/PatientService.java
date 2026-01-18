@@ -3,7 +3,9 @@ package com.api.demo.service;
 import java.sql.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -18,6 +20,7 @@ import com.api.demo.dao.HISDmlStatement;
 import com.api.demo.dto.CreatePatientRequest;
 import com.api.demo.dto.PatientDto;
 import com.api.demo.dto.UpdatePatientRequest;
+import com.api.demo.dto.interfaceDto.PatientSearchResult;
 import com.api.demo.entity.PatientDetailsEntity;
 import com.api.demo.entity.PatientEntity;
 import com.api.demo.repository.PatientDetailsRepository;
@@ -266,10 +269,10 @@ public class PatientService {
 
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-             Long siteId = 1L; // Default site ID;
+            Long siteId = 1L; // Default site ID;
             if (auth != null && auth.getPrincipal() instanceof EmployeePrincipal) {
                 EmployeePrincipal principal = (EmployeePrincipal) auth.getPrincipal();
-                 siteId = principal.getSiteId(); // <-- this is the employee's site
+                siteId = principal.getSiteId(); // <-- this is the employee's site
                 System.out.println("Site ID for new patient: " + siteId);
             } else {
                 // Fallback if user is not authenticated
@@ -313,6 +316,9 @@ public class PatientService {
 
             // Flags
             pstmt.setLong(paramIndex++, 2L); // ALIAS_FLAG
+            // Flags
+
+            pstmt.setLong(paramIndex++, 2L); // FILE_STATUS
 
             // Execute insert
             int rowsAffected = pstmt.executeUpdate();
@@ -550,7 +556,7 @@ public class PatientService {
             dto.setAddress("");
             dto.setMaritalStatus(null);
         }
-
+        dto.setFlagStatus(patient.getFileStatus());
         // Audit info from SYS_PATIENTS
         dto.setCreatedBy(patient.getCreatedBy());
         dto.setCreationDate(patient.getCreationDate());
@@ -871,5 +877,118 @@ public class PatientService {
         }
 
         // Update audit fields will be handled by @PreUpdate in entity
+    }
+
+    //// Search patients method can be added here in the future
+    ///
+    @Transactional(readOnly = true)
+    public List<PatientDto> searchPatientsByName(String searchText, Boolean isEnglish, Integer limit) {
+        // Get site ID from authenticated user
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Long siteId = 1L; // Default site ID
+
+        if (auth != null && auth.getPrincipal() instanceof EmployeePrincipal) {
+            EmployeePrincipal principal = (EmployeePrincipal) auth.getPrincipal();
+            siteId = principal.getSiteId();
+            log.info("Site ID for patient search: {}", siteId);
+        } else {
+            log.warn("No authenticated employee found or principal is not EmployeePrincipal");
+        }
+
+        // Prepare search text
+        String input = searchText.trim();
+        if (isEnglish) {
+            input = input.toUpperCase();
+        }
+
+        // Build regex pattern
+        String[] keywords = input.split("\\s+");
+        StringBuilder regex = new StringBuilder("^\\s*");
+        for (int i = 0; i < keywords.length; i++) {
+            if (i > 0) {
+                regex.append("\\s+");
+            }
+            regex.append(keywords[i]);
+            regex.append("[^\\s]*");
+        }
+        regex.append(".*");
+
+        // Set default limit if not provided
+        if (limit == null || limit <= 0 || limit > 100) {
+            limit = 100;
+        }
+
+        log.info("Searching patients - regex: {}, isEnglish: {}, siteId: {}, limit: {}",
+                regex.toString(), isEnglish, siteId, limit);
+
+        // Search using repository with dynamic query
+        List<PatientSearchResult> results = patientRepository.searchPatientsByNameDynamic(
+                siteId,
+                isEnglish ? 1 : 0, // Convert boolean to integer for SQL CASE
+                regex.toString(),
+                limit);
+
+        log.info("Found {} patients", results.size());
+
+        // Map results to DTOs
+        return results.stream()
+                .map(this::mapSearchResultToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Map PatientSearchResult (from native query) to PatientDto
+     */
+    private PatientDto mapSearchResultToDto(PatientSearchResult result) {
+        PatientDto dto = new PatientDto();
+
+        // Basic patient info - convert BigDecimal to Long
+        dto.setPatientId(result.getId() != null ? result.getId().longValue() : null);
+        dto.setPatientNo(result.getPatientNo() != null ? result.getPatientNo().longValue() : null);
+        dto.setSiteId(result.getSiteId() != null ? result.getSiteId().longValue() : null);
+
+        // Names
+        dto.setFirstNameAr(result.getFirstNameA());
+        dto.setFirstNameEn(result.getFirstNameE());
+        dto.setFatherNameAr(result.getFatherNameA());
+        dto.setFatherNameEn(result.getFatherNameE());
+        dto.setGrandfatherNameAr(result.getGrandfatherNameA());
+        dto.setGrandfatherNameEn(result.getGrandfatherNameE());
+        dto.setLastNameAr(result.getLastNameA());
+        dto.setLastNameEn(result.getLastNameE());
+        dto.setFullNameAr(result.getFullNameArb());
+        dto.setFullNameEn(result.getFullNameEng());
+
+        // Demographics
+        dto.setGender(result.getSex() != null ? result.getSex().longValue() : null);
+
+        // Date of birth - Timestamp to LocalDate
+        if (result.getDateOfBirth() != null) {
+            dto.setDateOfBirth(result.getDateOfBirth().toLocalDateTime().toLocalDate());
+        }
+
+        dto.setPlaceOfBirth(result.getBirthPlace());
+        dto.setNationalNo(result.getNationalIdNo());
+        dto.setNationality(result.getNationalValue() != null ? result.getNationalValue().longValue() : null);
+        dto.setFlagStatus(result.getFileStatus() != null ? result.getFileStatus().longValue() : null);
+
+        // Contact info
+        dto.setMobile(result.getMobileNo() != null ? result.getMobileNo() : "");
+        dto.setEmail(result.getEmail() != null ? result.getEmail() : "");
+        dto.setAddress(result.getAdress() != null ? result.getAdress() : "");
+        dto.setMaritalStatus(
+                result.getMaritalStatusValue() != null ? result.getMaritalStatusValue().longValue() : null);
+
+        // Audit info
+        dto.setCreatedBy(result.getCreatedBy());
+        if (result.getCreationDate() != null) {
+            dto.setCreationDate(result.getCreationDate().toLocalDateTime());
+        }
+        dto.setLastUpdatedBy(result.getLastUpdatedBy());
+        if (result.getLastUpdatedDate() != null) {
+            dto.setLastUpdatedDate(result.getLastUpdatedDate().toLocalDateTime());
+        }
+
+        return dto;
     }
 }

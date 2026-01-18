@@ -19,6 +19,7 @@ public class BasePatientRequest {
     protected Long maritalStatus;
     protected Long nationality;
     protected LocalDate dateOfBirth;
+    protected Long flagStatus;
 
     protected String mobile;
     protected String email;

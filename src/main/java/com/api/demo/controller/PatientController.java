@@ -1,11 +1,14 @@
 package com.api.demo.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import com.api.demo.dto.CreatePatientRequest;
 import com.api.demo.dto.PatientDto;
+import com.api.demo.dto.SearchPatientRequest;
 import com.api.demo.dto.UpdatePatientRequest;
 import com.api.demo.service.PatientService;
 
@@ -48,5 +51,13 @@ public class PatientController {
     }
 
 
-    
+      @PostMapping("/search")
+    public ResponseEntity<List<PatientDto>> searchPatients(@RequestBody SearchPatientRequest request) {
+        List<PatientDto> patients = patientService.searchPatientsByName(
+            request.getSearchText(), 
+            request.getIsEnglish(),
+            request.getLimit()  
+        );
+        return ResponseEntity.ok(patients);
+    }
 }
