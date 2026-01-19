@@ -24,7 +24,7 @@ public class SysUserEntity {
     private String active;
 
     @Column(name = "USER_TYPE")
-    private Integer userType;
+    private Long userType;
 
     @Column(name = "PATIENT_ID")
     private Long patientId;

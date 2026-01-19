@@ -38,8 +38,8 @@ public class PatientController {
     public ResponseEntity<Long> createPatient(
             @Valid @RequestBody CreatePatientRequest request) {
 
-        Long patientId = patientService.createPatient(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(patientId);
+        Long patientNo = patientService.createPatient(request);
+        return ResponseEntity.status(HttpStatus.CREATED).body(patientNo);
     }
 
      @PutMapping("/{patientId}")

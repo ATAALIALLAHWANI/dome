@@ -24,7 +24,7 @@ public class PatientDto {
     private Long gender;
     private Long maritalStatus;
     private Long nationality;
-    private Long flagStatus;
+    // private Long flagStatus;
     private LocalDate dateOfBirth;
     
     private String mobile;

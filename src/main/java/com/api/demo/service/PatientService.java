@@ -52,7 +52,7 @@ public class PatientService {
     private PatientDetailsRepository patientDetailsRepository;
 
     public Long createPatient(CreatePatientRequest req) {
-        log.info("Creating patient: {} {}", req.getFirstNameEn(), req.getLastNameEn());
+        // log.info("Creating patient: {} {}", req.getFirstNameEn(), req.getLastNameEn());
 
         /* ================= VALIDATE REQUIRED FIELDS ================= */
         validateRequiredFields(req);
@@ -85,7 +85,7 @@ public class PatientService {
 
             /* ================= GENERATE PATIENT NUMBER ================= */
             Long patientNo = patientNumberGenerator.generateNextPatientNumberWithValidation();
-            log.info("Generated patient number: {}", patientNo);
+            // log.info("Generated patient number: {}", patientNo);
 
             /* ================= VALIDATE NATIONAL ID ================= */
             if (req.getNationalNo() != null && !req.getNationalNo().trim().isEmpty()) {
@@ -103,9 +103,9 @@ public class PatientService {
 
             // Commit transaction
             conn.commit();
-            log.info("Patient created successfully - ID: {}, Number: {}", patientId, patientNo);
+            // log.info("Patient created successfully - ID: {}, Number: {}", patientId, patientNo);
 
-            return patientId;
+            return patientNo;
 
         } catch (SQLException e) {
             log.error("Database error creating patient: {}", e.getMessage(), e);
@@ -473,7 +473,7 @@ public class PatientService {
 
     @Transactional(readOnly = true)
     public PatientDto getPatientById(Long patientId) {
-        log.info("Getting patient with ID: {}", patientId);
+        // log.info("Getting patient with ID: {}", patientId);
 
         // Find patient in SYS_PATIENTS table
         PatientEntity patient = patientRepository.findById(patientId)
@@ -485,8 +485,8 @@ public class PatientService {
         PatientDetailsEntity details = patientDetailsRepository.findById(patientId)
                 .orElse(null); // Details might be null if not created
 
-        log.info("Found patient: {} {} (ID: {})",
-                patient.getFirstNameE(), patient.getLastNameE(), patientId);
+        // // log.info("Found patient: {} {} (ID: {})",
+        //         patient.getFirstNameE(), patient.getLastNameE(), patientId);
 
         // Map entities to DTO
         return mapToPatientDto(patient, details);
@@ -494,7 +494,7 @@ public class PatientService {
 
     @Transactional(readOnly = true)
     public PatientDto getPatientByNumber(Long patientNo) {
-        log.info("Getting patient with patient number: {}", patientNo);
+        // log.info("Getting patient with patient number: {}", patientNo);
 
         // Find patient in SYS_PATIENTS
         PatientEntity patient = patientRepository.findByPatientNo(patientNo);
@@ -556,7 +556,7 @@ public class PatientService {
             dto.setAddress("");
             dto.setMaritalStatus(null);
         }
-        dto.setFlagStatus(patient.getFileStatus());
+        // dto.setFlagStatus(patient.getFileStatus());
         // Audit info from SYS_PATIENTS
         dto.setCreatedBy(patient.getCreatedBy());
         dto.setCreationDate(patient.getCreationDate());
@@ -604,7 +604,7 @@ public class PatientService {
         patientRepository.save(patient);
         patientDetailsRepository.save(details);
 
-        log.info("Patient updated successfully - ID: {}", patientId);
+        // log.info("Patient updated successfully - ID: {}", patientId);
     }
 
     /**
@@ -890,7 +890,7 @@ public class PatientService {
         if (auth != null && auth.getPrincipal() instanceof EmployeePrincipal) {
             EmployeePrincipal principal = (EmployeePrincipal) auth.getPrincipal();
             siteId = principal.getSiteId();
-            log.info("Site ID for patient search: {}", siteId);
+            // log.info("Site ID for patient search: {}", siteId);
         } else {
             log.warn("No authenticated employee found or principal is not EmployeePrincipal");
         }
@@ -918,8 +918,8 @@ public class PatientService {
             limit = 100;
         }
 
-        log.info("Searching patients - regex: {}, isEnglish: {}, siteId: {}, limit: {}",
-                regex.toString(), isEnglish, siteId, limit);
+        // log.info("Searching patients - regex: {}, isEnglish: {}, siteId: {}, limit: {}",
+        //         regex.toString(), isEnglish, siteId, limit);
 
         // Search using repository with dynamic query
         List<PatientSearchResult> results = patientRepository.searchPatientsByNameDynamic(
@@ -928,7 +928,7 @@ public class PatientService {
                 regex.toString(),
                 limit);
 
-        log.info("Found {} patients", results.size());
+        // log.info("Found {} patients", results.size());
 
         // Map results to DTOs
         return results.stream()
@@ -970,7 +970,7 @@ public class PatientService {
         dto.setPlaceOfBirth(result.getBirthPlace());
         dto.setNationalNo(result.getNationalIdNo());
         dto.setNationality(result.getNationalValue() != null ? result.getNationalValue().longValue() : null);
-        dto.setFlagStatus(result.getFileStatus() != null ? result.getFileStatus().longValue() : null);
+        // dto.setFlagStatus(result.getFileStatus() != null ? result.getFileStatus().longValue() : null);
 
         // Contact info
         dto.setMobile(result.getMobileNo() != null ? result.getMobileNo() : "");
