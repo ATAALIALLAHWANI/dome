@@ -53,6 +53,9 @@ public class PatientController {
 
       @PostMapping("/search")
     public ResponseEntity<List<PatientDto>> searchPatients(@RequestBody SearchPatientRequest request) {
+          if( request.getLimit() == null || request.getLimit() <=0 || request.getLimit() > 500) {
+              request.setLimit(250); // Default to 250 if invalid limit is provided
+          }
         List<PatientDto> patients = patientService.searchPatientsByName(
             request.getSearchText(), 
             request.getIsEnglish(),

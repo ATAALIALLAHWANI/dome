@@ -6,5 +6,5 @@ import lombok.Data;
 public class SearchPatientRequest {
     private String searchText;
     private Boolean isEnglish;
-    private Integer limit = 100; // Default to 100, but can be changed
+    private Integer limit ; // Default to 100, but can be changed
 }
