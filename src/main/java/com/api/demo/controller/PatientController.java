@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import com.api.demo.dto.CreatePatientRequest;
@@ -30,11 +31,13 @@ public class PatientController {
         return patientService.getPatientById(patientId);
     }
     @GetMapping("/number/{patientNo}")
+    // @PreAuthorize("principal.empType == 9  || principal.empType == 5") 
     public PatientDto getPatientByNumber(@PathVariable Long patientNo) {
         return patientService.getPatientByNumber(patientNo);
     }
 
      @PostMapping
+     @PreAuthorize("hasAuthority('PATIENT_CREATE')")
     public ResponseEntity<Long> createPatient(
             @Valid @RequestBody CreatePatientRequest request) {
 

@@ -71,6 +71,7 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
                 empDto.getStaffId(),
                 empDto.getEmpNameEng(),
                 empDto.getSiteId(),
+                empDto.getEmpType(),
                 null,
                 authResult.getAuthorities());
 
@@ -79,14 +80,18 @@ public class AuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
 
-        String token = JWT.create()
-                .withSubject(employeePrincipal.getUsername())
-                .withClaim("roles", employeePrincipal.getAuthorities().stream()
-                        .map(a -> a.getAuthority())
-                        .toList())
-                .withClaim("siteId", employeePrincipal.getSiteId())
-                .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.TOKEN_EXPIRATION))
-                .sign(Algorithm.HMAC512(SecurityConstants.SECRET_KEY));
+       String token = JWT.create()
+        .withSubject(employeePrincipal.getUsername())
+        .withClaim(
+            "roles",
+            employeePrincipal.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList())
+        )
+        .withClaim("siteId", employeePrincipal.getSiteId())
+        .withClaim("empType", employeePrincipal.getEmpType()) // 👈 ADD
+        .withExpiresAt(new Date(System.currentTimeMillis() + SecurityConstants.TOKEN_EXPIRATION))
+        .sign(Algorithm.HMAC512(SecurityConstants.SECRET_KEY));
 
         // Prepare response
         EmployeeLoginWithTokenDto loginResponse = new EmployeeLoginWithTokenDto();

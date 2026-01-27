@@ -52,6 +52,9 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
 
             // Extract siteId from token
             Long siteId = decodedJWT.getClaim("siteId").asLong();
+            // Extract empType from token
+
+            Long empType = decodedJWT.getClaim("empType").asLong();
 
             // Extract roles and convert to GrantedAuthority
             List<GrantedAuthority> authorities = decodedJWT.getClaim("roles").asList(String.class)
@@ -64,6 +67,7 @@ public class JWTAuthorizationFilter extends OncePerRequestFilter {
                     null, // staffId (optional, include if stored in JWT)
                     username,
                     siteId,
+                    empType, 
                     null, // password not needed here
                     authorities
             );
