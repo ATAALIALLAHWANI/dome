@@ -52,7 +52,7 @@ public class PatientService {
     private PatientDetailsRepository patientDetailsRepository;
 
     public Long createPatient(CreatePatientRequest req) {
-        // log.info("Creating patient: {} {}", req.getFirstNameEn(), req.getLastNameEn());
+        log.info("Creating patient: {} {}", req.getFirstNameEn(), req.getLastNameEn());
 
         /* ================= VALIDATE REQUIRED FIELDS ================= */
         validateRequiredFields(req);
@@ -85,7 +85,7 @@ public class PatientService {
 
             /* ================= GENERATE PATIENT NUMBER ================= */
             Long patientNo = patientNumberGenerator.generateNextPatientNumberWithValidation();
-            // log.info("Generated patient number: {}", patientNo);
+            log.info("Generated patient number: {}", patientNo);
 
             /* ================= VALIDATE NATIONAL ID ================= */
             if (req.getNationalNo() != null && !req.getNationalNo().trim().isEmpty()) {
@@ -103,7 +103,7 @@ public class PatientService {
 
             // Commit transaction
             conn.commit();
-            // log.info("Patient created successfully - ID: {}, Number: {}", patientId, patientNo);
+            log.info("Patient created successfully - ID: {}, Number: {}", patientId, patientNo);
 
             return patientNo;
 
@@ -567,29 +567,31 @@ public class PatientService {
     }
 
     @Transactional
-    public void updatePatient(Long patientId, UpdatePatientRequest req) {
-        log.info("Updating patient with ID: {}", patientId);
+    public void updatePatient(Long patientNo, UpdatePatientRequest req) {
+        log.info("Updating patient with ID: {}", patientNo);
 
         /* ================= VALIDATE REQUIRED FIELDS FOR UPDATE ================= */
         validateUpdateFields(req);
 
         /* ================= FIND EXISTING PATIENT ================= */
-        PatientEntity patient = patientRepository.findById(patientId)
+        PatientEntity patient = patientRepository.findByPatientNo(patientNo);
+     if (patient == null) {
+            throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Patient not found with patient number: " + patientNo);
+        }
+                
+        PatientDetailsEntity details = patientDetailsRepository.findById(patient.getId())
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
-                        "Patient not found with ID: " + patientId));
-
-        PatientDetailsEntity details = patientDetailsRepository.findById(patientId)
-                .orElseThrow(() -> new ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "Patient details not found for ID: " + patientId));
+                        "Patient details not found for ID: " + patientNo));
 
         /*
          * ================= CHECK FOR DUPLICATE (EXCLUDING CURRENT PATIENT)
          * =================
          */
         // Always check if any key fields are being updated
-        checkPatientDuplicateForUpdate(patientId, req, patient, details);
+        checkPatientDuplicateForUpdate(patient.getId(), req, patient, details);
 
         /* ================= UPDATE PATIENT ENTITY (SYS_PATIENTS) ================= */
         boolean nameChanged = updatePatientEntity(patient, req);
@@ -604,7 +606,7 @@ public class PatientService {
         patientRepository.save(patient);
         patientDetailsRepository.save(details);
 
-        // log.info("Patient updated successfully - ID: {}", patientId);
+        log.info("Patient updated successfully - ID: {}", patientNo);
     }
 
     /**

@@ -40,7 +40,7 @@ public class CustomAuthenticationManager implements AuthenticationManager {
         }
 
         List<GrantedAuthority> authorities = new ArrayList<>();
-        Set<Long> PATIENT_CREATOR_TYPES = Set.of(9L, 11L, 3L, 10L, 7L);
+        Set<Long> PATIENT_CREATOR_TYPES = Set.of(9L, 11L, 3L, 10L, 7L , 5L);
 
         if (user.getEmpType() != null && PATIENT_CREATOR_TYPES.contains(user.getEmpType())) {
             authorities.add(new SimpleGrantedAuthority("PATIENT_CREATE"));

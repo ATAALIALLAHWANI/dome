@@ -45,11 +45,12 @@ public class PatientController {
         return ResponseEntity.status(HttpStatus.CREATED).body(patientNo);
     }
 
-     @PutMapping("/{patientId}")
+     @PutMapping("/{patientNo}")
+    @PreAuthorize("hasAuthority('PATIENT_CREATE')")
     public ResponseEntity<Void> updatePatient(
-            @PathVariable Long patientId,
+            @PathVariable Long patientNo,
             @Valid @RequestBody UpdatePatientRequest request) {
-        patientService.updatePatient(patientId, request);
+        patientService.updatePatient(patientNo, request);
         return ResponseEntity.ok().build();
     }
 
